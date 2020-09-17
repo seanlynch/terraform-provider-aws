@@ -40,6 +40,26 @@ resource "aws_cognito_user_pool" "example" {
 }
 ```
 
+### Using Account Recovery Setting
+
+```hcl
+resource "aws_cognito_user_pool" "test" {
+  name = "mypool"
+
+  account_recovery_setting {
+    recovery_mechanisms {
+      name     = "verified_email"
+      priority = 1
+    }
+
+    recovery_mechanisms {
+      name     = "verified_phone_number"
+      priority = 2
+    }
+  }
+}
+```
+
 ## Argument Reference
 
 The following arguments are supported:
@@ -68,63 +88,65 @@ The following arguments are supported:
 * `username_configuration` - (Optional) The [Username Configuration](#username-configuration).
 * `user_pool_add_ons` - (Optional) Configuration block for [user pool add-ons](#user-pool-add-ons) to enable user pool advanced security mode features.
 * `verification_message_template` (Optional) - The [verification message templates](#verification-message-template) configuration.
+* `account_recovery_setting` (Optional) - The [account_recovery_setting](#account-recovery-setting) configuration.
 
 #### Admin Create User Config
 
-* `allow_admin_create_user_only` (Optional) - Set to True if only the administrator is allowed to create user profiles. Set to False if users can sign themselves up via an app.
-* `invite_message_template` (Optional) - The [invite message template structure](#invite-message-template).
+  * `allow_admin_create_user_only` (Optional) - Set to True if only the administrator is allowed to create user profiles. Set to False if users can sign themselves up via an app.
+  * `invite_message_template` (Optional) - The [invite message template structure](#invite-message-template).
+  * `unused_account_validity_days` (Optional) - **DEPRECATED** Use password_policy.temporary_password_validity_days instead - The user account expiration limit, in days, after which the account is no longer usable.
 
 ##### Invite Message template
 
-* `email_message` (Optional) - The message template for email messages. Must contain `{username}` and `{####}` placeholders, for username and temporary password, respectively.
-* `email_subject` (Optional) - The subject line for email messages.
-* `sms_message` (Optional) - The message template for SMS messages. Must contain `{username}` and `{####}` placeholders, for username and temporary password, respectively.
+  * `email_message` (Optional) - The message template for email messages. Must contain `{username}` and `{####}` placeholders, for username and temporary password, respectively.
+  * `email_subject` (Optional) - The subject line for email messages.
+  * `sms_message` (Optional) - The message template for SMS messages. Must contain `{username}` and `{####}` placeholders, for username and temporary password, respectively.
 
 #### Device Configuration
 
-* `challenge_required_on_new_device` (Optional) - Indicates whether a challenge is required on a new device. Only applicable to a new device.
-* `device_only_remembered_on_user_prompt` (Optional) - If true, a device is only remembered on user prompt.
+  * `challenge_required_on_new_device` (Optional) - Indicates whether a challenge is required on a new device. Only applicable to a new device.
+  * `device_only_remembered_on_user_prompt` (Optional) - If true, a device is only remembered on user prompt.
 
 #### Email Configuration
 
-* `reply_to_email_address` (Optional) - The REPLY-TO email address.
-* `source_arn` (Optional) - The ARN of the SES verified email identity to to use. Required if `email_sending_account` is set to `DEVELOPER`.
-* `from_email_address` (Optional) - Sender’s email address or sender’s display name with their email address (e.g. `john@example.com`, `John Smith <john@example.com>` or `\"John Smith Ph.D.\" <john@example.com>`). Escaped double quotes are required around display names that contain certain characters as specified in [RFC 5322](https://tools.ietf.org/html/rfc5322).
-* `email_sending_account` (Optional) - The email delivery method to use. `COGNITO_DEFAULT` for the default email functionality built into Cognito or `DEVELOPER` to use your Amazon SES configuration.
+  * `reply_to_email_address` (Optional) - The REPLY-TO email address.
+  * `source_arn` (Optional) - The ARN of the email source.
+  * `from_email_address` (Optional) - Sender’s email address or sender’s name with their email address (e.g. "john@smith.com" or "John Smith <john@smith.com>")
+  * `email_sending_account` (Optional) - Instruct Cognito to either use its built-in functional or Amazon SES to send out emails.
 
 #### Lambda Configuration
 
-* `create_auth_challenge` (Optional) - The ARN of the lambda creating an authentication challenge.
-* `custom_message` (Optional) - A custom Message AWS Lambda trigger.
-* `define_auth_challenge` (Optional) - Defines the authentication challenge.
-* `post_authentication` (Optional) - A post-authentication AWS Lambda trigger.
-* `post_confirmation` (Optional) - A post-confirmation AWS Lambda trigger.
-* `pre_authentication` (Optional) - A pre-authentication AWS Lambda trigger.
-* `pre_sign_up` (Optional) - A pre-registration AWS Lambda trigger.
-* `pre_token_generation` (Optional) - Allow to customize identity token claims before token generation.
-* `user_migration` (Optional) - The user migration Lambda config type.
-* `verify_auth_challenge_response` (Optional) - Verifies the authentication challenge response.
+  * `create_auth_challenge` (Optional) - The ARN of the lambda creating an authentication challenge.
+  * `custom_message` (Optional) - A custom Message AWS Lambda trigger.
+  * `define_auth_challenge` (Optional) - Defines the authentication challenge.
+  * `post_authentication` (Optional) - A post-authentication AWS Lambda trigger.
+  * `post_confirmation` (Optional) - A post-confirmation AWS Lambda trigger.
+  * `pre_authentication` (Optional) - A pre-authentication AWS Lambda trigger.
+  * `pre_sign_up` (Optional) - A pre-registration AWS Lambda trigger.
+  * `pre_token_generation` (Optional) - Allow to customize identity token claims before token generation.
+  * `user_migration` (Optional) - The user migration Lambda config type.
+  * `verify_auth_challenge_response` (Optional) - Verifies the authentication challenge response.
 
 #### Password Policy
 
-* `minimum_length` (Optional) - The minimum length of the password policy that you have set.
-* `require_lowercase` (Optional) - Whether you have required users to use at least one lowercase letter in their password.
-* `require_numbers` (Optional) - Whether you have required users to use at least one number in their password.
-* `require_symbols` (Optional) - Whether you have required users to use at least one symbol in their password.
-* `require_uppercase` (Optional) - Whether you have required users to use at least one uppercase letter in their password.
-* `temporary_password_validity_days` (Optional) - In the password policy you have set, refers to the number of days a temporary password is valid. If the user does not sign-in during this time, their password will need to be reset by an administrator.
+  * `minimum_length` (Optional) - The minimum length of the password policy that you have set.
+  * `require_lowercase` (Optional) - Whether you have required users to use at least one lowercase letter in their password.
+  * `require_numbers` (Optional) - Whether you have required users to use at least one number in their password.
+  * `require_symbols` (Optional) - Whether you have required users to use at least one symbol in their password.
+  * `require_uppercase` (Optional) - Whether you have required users to use at least one uppercase letter in their password.
+  * `temporary_password_validity_days` (Optional) - In the password policy you have set, refers to the number of days a temporary password is valid. If the user does not sign-in during this time, their password will need to be reset by an administrator.
 
 #### Schema Attributes
 
 ~> **NOTE:** When defining an `attribute_data_type` of `String` or `Number`, the respective attribute constraints configuration block (e.g `string_attribute_constraints` or `number_attribute_contraints`) is required to prevent recreation of the Terraform resource. This requirement is true for both standard (e.g. name, email) and custom schema attributes.
 
-* `attribute_data_type` (Required) - The attribute data type. Must be one of `Boolean`, `Number`, `String`, `DateTime`.
-* `developer_only_attribute` (Optional) - Specifies whether the attribute type is developer only.
-* `mutable` (Optional) - Specifies whether the attribute can be changed once it has been created.
-* `name` (Required) - The name of the attribute.
-* `number_attribute_constraints` (Optional) - Specifies the [constraints for an attribute of the number type](#number-attribute-constraints).
-* `required` (Optional) - Specifies whether a user pool attribute is required. If the attribute is required and the user does not provide a value, registration or sign-in will fail.
-* `string_attribute_constraints` (Optional) -Specifies the [constraints for an attribute of the string type](#string-attribute-constraints).
+  * `attribute_data_type` (Required) - The attribute data type. Must be one of `Boolean`, `Number`, `String`, `DateTime`.
+  * `developer_only_attribute` (Optional) - Specifies whether the attribute type is developer only.
+  * `mutable` (Optional) - Specifies whether the attribute can be changed once it has been created.
+  * `name` (Required) - The name of the attribute.
+  * `number_attribute_constraints` (Optional) - Specifies the [constraints for an attribute of the number type](#number-attribute-constraints).
+  * `required` (Optional) - Specifies whether a user pool attribute is required. If the attribute is required and the user does not provide a value, registration or sign-in will fail.
+  * `string_attribute_constraints` (Optional) -Specifies the [constraints for an attribute of the string type](#string-attribute-constraints).
 
 ##### Defaults for Standard Attributes
 
